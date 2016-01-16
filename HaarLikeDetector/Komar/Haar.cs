@@ -22,7 +22,7 @@ namespace HaarLikeDetector.Komar
         double window_move_step;
         int size, x, y;
         // Initialize
-        Bitmap RGB2Mono(Bitmap Image, byte Conversion_Type = 0)
+        Bitmap RGB2Mono(Bitmap Image, byte Conversion_Type = 1)
         {
             /* Conversion type:
              *  0= RGB 2 Grey 2
@@ -186,24 +186,37 @@ namespace HaarLikeDetector.Komar
         }
         double sumInRange(int x1, int x2, int y1, int y2)
         {
-
-            if (x1 <= 0)
-            {
-                x1 = 1;
-            }
-            if (y1 <= 0)
-            {
-                y1 = 1;
-            }
+            double sum;
             if (x2 >= width)
             {
-                x2 = width-1;
+                x2 = width - 1;
             }
             if (y2 >= height)
             {
-                y2 = height-1;
+                y2 = height - 1;
             }
-            return iImage[x2, y2] - iImage[x1 - 1, y2] - iImage[x2, y1 - 1] + iImage[x1 - 1, y1 - 1]; ;
+            if ((x1 <= 0) && (y1 <= 0))
+            {
+                sum= iImage[x2, y2];
+            }
+            else {
+                if ((x1 <= 0))
+                {
+                    sum = iImage[x2, y2] - iImage[x2, y1 - 1];
+                }
+                else
+                {
+                    if ((y1 <= 0))
+                    {
+                        sum = iImage[x2, y2] - iImage[x1 - 1, y2] ;
+                    }
+                    else
+                    {
+                        sum = iImage[x2, y2] - iImage[x1 - 1, y2] - iImage[x2, y1 - 1] + iImage[x1 - 1, y1 - 1];
+                    }
+                }
+            }
+            return sum;
         }
         public double[] allHarrFeatures()
         {
@@ -235,7 +248,7 @@ namespace HaarLikeDetector.Komar
         }
         public double[] selectedHarrFeatures(int x1, int x2, int y1, int y2, List<int> key_filter)
         {
-            double[] harr = new double[key_filter.Count()];
+            double[] harr = new double[keys.Count()];
             int cx, cy;
             double max_size_x = (x2 - x1) / (p * 2);
             double max_size_y = (y2 - y1) / (p * 2);
@@ -253,7 +266,7 @@ namespace HaarLikeDetector.Komar
                 sw = max_size * (Math.Pow(Math.Sqrt(2) / 2, element.sx));
                 sh = max_size * (Math.Pow(Math.Sqrt(2) / 2, element.sy));
                 active_rect = genRectangle(cx, cy, sw, sh);
-                harr[k++] = element.Mask(active_rect);
+                harr[key] = element.Mask(active_rect);
             }
             return harr;
         }
@@ -545,20 +558,20 @@ namespace HaarLikeDetector.Komar
             return val;
         }
 
-        public bool allHarrScanImageStart(int start_x, int start_y, double window_ratio, int window_min_size,
+        public void allHarrScanImageStart(int start_x, int start_y, double window_ratio, int window_min_size,
                                        int window_max_size, int window_size_step, double window_move_step)
         {
             size = window_min_size;
 
             this.window_max_size = window_max_size;
             this.window_size_step = window_size_step;
-            this.window_move_step = window_move_step;//przerowbic na procenty 
+            this.window_move_step = window_move_step;
             this.window_ratio = window_ratio;
             this.x_start = start_x;
             this.y_start = start_y;
             x = x_start;
             y = y_start;
-            return true;
+            return ;
         }
         public double[] allHarrScanImageStep()
         {
@@ -577,12 +590,35 @@ namespace HaarLikeDetector.Komar
             }
             return ArgH;
         }
+        public double[] allHarrScanImageStep(List<int> key_filter)
+        {
+            double[] ArgH;
+            window_width = size;
+            window_height = (int)Math.Round(window_width / window_ratio);
+            x_step = (int)Math.Round(window_width * window_move_step);
+            y_step = (int)Math.Round(window_height * window_move_step);
+            ArgH = selectedHarrFeatures(x, x + window_width, y, y + window_height,key_filter);
+            x += x_step;
+            if (x + window_width > width)
+            {
+                x = x_start;
+                y += y_step;
+
+            }
+            return ArgH;
+        }
         public bool isContinue()
         {
             bool ans = true;
             if (y + window_height > height)
             {
-                ans = false;//skalowanie dopisz
+                window_width = window_width + window_size_step;
+                window_height = (int)Math.Round(window_width / window_ratio);
+                x = x_start;
+                y = y_start;
+            }
+            if (window_width> window_max_size) { 
+                ans = false;
             }
             return ans;
         }
