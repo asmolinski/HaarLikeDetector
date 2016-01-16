@@ -293,9 +293,25 @@ namespace HaarLikeDetector.Komar
                     ++
             */
             double val;
-            val = -sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
-                + sumInRange(corners[0, 0], corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1]);
+            /*val = - sumInRange(corners[0,0], corners[0, 1], corners[1,0],(int)Math.Round(corners[1,1]/2.0)) 
+                + sumInRange(corners[0, 0], corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0)+1, corners[1 ,1]);
             val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            */
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0));
+            negativeQuantity += ((corners[0, 1] - corners[0, 0] + 1) * ((int)Math.Round(corners[1, 1] / 2.0) - corners[1, 0] + 1));
+
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
             return val;
         }
         double genMaskDualVertical(int[,] corners)
@@ -305,9 +321,25 @@ namespace HaarLikeDetector.Komar
                     +-
             */
             double val;
-            val = sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], corners[1, 1])
-                - sumInRange(1 + (int)Math.Round(corners[0, 1] / 2.0), corners[0, 1], corners[1, 0], corners[1, 1]);
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            /*val = sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], corners[1, 1] ) 
+                - sumInRange(1+(int)Math.Round(corners[0, 1] / 2.0), corners[0, 1], corners[1, 0], corners[1, 1]);
+            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));*/
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(1 + (int)Math.Round(corners[0, 1] / 2.0), corners[0, 1], corners[1, 0], corners[1, 1]);
+            negativeQuantity += ((corners[0, 1] - ((int)Math.Round(corners[0, 1] / 2.0) + 1) + 1) * (corners[1, 1] - corners[1, 0] + 1));
+
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
+
             return val;
         }
         double genMaskTripleHorizonta(int[,] corners)
@@ -318,10 +350,27 @@ namespace HaarLikeDetector.Komar
                     ---
             */
             double val;
-            val = -sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0))
-                + sumInRange(corners[0, 0], corners[0, 1], (int)Math.Round(corners[1, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[1, 1] / 3.0))
-                - sumInRange(corners[0, 0], corners[0, 1], 2 * (int)Math.Round(corners[1, 1] / 3.0) + 1, corners[1, 1]);
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            /*val = -sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0)) 
+                + sumInRange(corners[0, 0], corners[0, 1], (int)Math.Round(corners[1, 1] / 3.0)+1, 2*(int)Math.Round(corners[1, 1] / 3.0))
+                - sumInRange(corners[0, 0], corners[0, 1], 2*(int)Math.Round(corners[1, 1] / 3.0) + 1, corners[1, 1] );
+            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));*/
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0));
+            negativeQuantity += ((corners[0, 1] - corners[0, 0] + 1) * ((int)Math.Round(corners[1, 1] / 3.0) - corners[1, 0] + 1));
+            negative += sumInRange(corners[0, 0], corners[0, 1], 2 * (int)Math.Round(corners[1, 1] / 3.0) + 1, corners[1, 1]);
+            negativeQuantity += ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - (2 * (int)Math.Round(corners[1, 1] / 3.0) + 1) + 1));
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
+
             return val;
         }
         double genMaskTripleVertical(int[,] corners)
@@ -332,10 +381,28 @@ namespace HaarLikeDetector.Komar
                     -+-
             */
             double val;
-            val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], corners[1, 1])
+            /*val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), corners[1,0], corners[1, 1])
                  + sumInRange((int)Math.Round(corners[0, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], corners[1, 1])
                  - sumInRange(2 * (int)Math.Round(corners[0, 1] / 3.0) + 1, corners[0, 1], corners[1, 0], corners[1, 1]);
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0])); */
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], corners[1, 1]);
+            negativeQuantity += (((int)Math.Round(corners[0, 1] / 3.0) - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            negative += sumInRange(2 * (int)Math.Round(corners[0, 1] / 3.0) + 1, corners[0, 1], corners[1, 0], corners[1, 1]);
+            negativeQuantity += ((corners[0, 1] - (2 * (int)Math.Round(corners[0, 1] / 3.0) + 1) + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
+
+
             return val;
         }
         double genMaskQuadCheess(int[,] corners)
@@ -345,11 +412,30 @@ namespace HaarLikeDetector.Komar
                     +-
             */
             double val;
-            val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
-                + sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
-                - sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), (int)Math.Round(corners[1, 1] / 2.0), corners[1, 1])
-                + sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0), corners[1, 1]);
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            /*val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
+                + sumInRange((int)Math.Round(corners[0, 1] / 2.0)+1, corners[0, 1] , corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
+                - sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), (int)Math.Round(corners[1, 1] / 2.0), corners[1, 1] )
+                + sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0), corners[1, 1] );
+            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0])); */
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0));
+            negativeQuantity += (((int)Math.Round(corners[0, 1] / 2.0) - corners[0, 0] + 1) * ((int)Math.Round(corners[1, 1] / 2.0) - corners[1, 0] + 1));
+            negative += sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1]);
+            negativeQuantity += ((corners[0, 1] - ((int)Math.Round(corners[0, 1] / 2.0) + 1) + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
+
+
+
             return val;
         }
         double genMaskCenter(int[,] corners)
@@ -360,10 +446,25 @@ namespace HaarLikeDetector.Komar
                     ---
             */
             double val;
-            val = -sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1])
-                + 2 * sumInRange((int)Math.Round(corners[0, 1] / 4.0) + 1, 3 * (int)Math.Round(corners[0, 1] / 4.0),
+            /*val = -sumInRange(corners[0, 0], corners[0, 1] , corners[1, 0], corners[1, 1])
+                + 2* sumInRange((int)Math.Round(corners[0, 1] / 4.0) + 1, 3*(int)Math.Round(corners[0, 1] / 4.0) ,
                     (int)Math.Round(corners[1, 1] / 4.0) + 1, 3 * (int)Math.Round(corners[1, 1] / 4.0));
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));*/
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double positiveQuantity = 0;
+            double positive = 0;
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //pos
+            positive += sumInRange((int)Math.Round(corners[0, 1] / 4.0) + 1, 3 * (int)Math.Round(corners[0, 1] / 4.0),
+                    (int)Math.Round(corners[1, 1] / 4.0) + 1, 3 * (int)Math.Round(corners[1, 1] / 4.0));
+            positiveQuantity += (((3 * (int)Math.Round(corners[0, 1] / 4.0)) - ((int)Math.Round(corners[0, 1] / 4.0) + 1) + 1) *
+                    ((3 * (int)Math.Round(corners[1, 1] / 4.0))) - ((int)Math.Round(corners[1, 1] / 4.0) + 1) + 1);
+            //final
+            positive = total - negative;
+            val = positive / positiveQuantity - negative / (FullQuatity - positiveQuantity);
             return val;
         }
         double genMask2x3Cheess(int[,] corners)
@@ -373,13 +474,34 @@ namespace HaarLikeDetector.Komar
                     +-+
             */
             double val;
-            val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
+            /*val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
                     + sumInRange((int)Math.Round(corners[0, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
                     - sumInRange(2 * (int)Math.Round(corners[0, 1] / 3.0) + 1, corners[1, 0], corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0))
                     + sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1])
                     - sumInRange((int)Math.Round(corners[0, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[0, 1] / 3.0), (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1])
-                    + sumInRange(2 * (int)Math.Round(corners[0, 1] / 3.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1]);
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+                    + sumInRange(2 * (int)Math.Round(corners[0, 1] / 3.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1]); */
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 3.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0));
+            negativeQuantity += (((int)Math.Round(corners[0, 1] / 3.0) - corners[0, 0] + 1) * (((int)Math.Round(corners[1, 1] / 2.0)) - corners[1, 0] + 1));
+
+            negative += sumInRange(2 * (int)Math.Round(corners[0, 1] / 3.0) + 1, corners[1, 0], corners[1, 0], (int)Math.Round(corners[1, 1] / 2.0));
+            negativeQuantity += ((corners[0, 1] - (2 * (int)Math.Round(corners[0, 1] / 3.0) + 1) + 1) * (corners[1, 1] - ((int)Math.Round(corners[1, 1] / 2.0) + 1)));
+
+            negative += sumInRange((int)Math.Round(corners[0, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[0, 1] / 3.0), (int)Math.Round(corners[1, 1] / 2.0) + 1, corners[1, 1]);
+            negativeQuantity += (((2 * (int)Math.Round(corners[0, 1] / 3.0)) - ((int)Math.Round(corners[0, 1] / 3.0) + 1) + 1) * (corners[1, 1] - ((int)Math.Round(corners[1, 1] / 2.0) + 1) + 1));
+
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
+
             return val;
         }
         double genMask3x2Cheess(int[,] corners)
@@ -390,13 +512,36 @@ namespace HaarLikeDetector.Komar
                     -+
             */
             double val;
-            val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0))
-                    + sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), (int)Math.Round(corners[1, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[1, 1] / 3.0))
+            /*val = -sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0))
+                    + sumInRange(corners[0,0], (int)Math.Round(corners[0, 1] / 2.0), (int)Math.Round(corners[1, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[1, 1] / 3.0))
                     - sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), 2 * (int)Math.Round(corners[1, 1] / 3.0) + 1, corners[1, 1])
                     + sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0))
-                    - sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[1, 1] / 3.0))
+                    - sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[1,1] / 3.0))
                     + sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], 2 * (int)Math.Round(corners[1, 1] / 3.0) + 1, corners[1, 1]);
-            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0]));
+            val = val / ((corners[0, 1] - corners[0, 0]) * (corners[1, 1] - corners[1, 0])); */
+            double total = 0;
+            double FullQuatity = 0;
+            double negative = 0;
+            double negativeQuantity = 0;
+            double positive = 0;
+
+            total = sumInRange(corners[0, 0], corners[0, 1], corners[1, 0], corners[1, 1]);
+            FullQuatity = ((corners[0, 1] - corners[0, 0] + 1) * (corners[1, 1] - corners[1, 0] + 1));
+            //neg
+            negative += sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), corners[1, 0], (int)Math.Round(corners[1, 1] / 3.0));
+            negativeQuantity += ((((int)Math.Round(corners[0, 1] / 2.0)) - corners[0, 0] + 1) * (((int)Math.Round(corners[1, 1] / 3.0)) - corners[1, 0] + 1));
+
+            negative += sumInRange(corners[0, 0], (int)Math.Round(corners[0, 1] / 2.0), 2 * (int)Math.Round(corners[1, 1] / 3.0) + 1, corners[1, 1]);
+            negativeQuantity += ((((int)Math.Round(corners[0, 1] / 2.0)) - corners[0, 0] + 1) * (corners[1, 1] - (2 * (int)Math.Round(corners[1, 1] / 3.0) + 1) + 1));
+
+            negative += sumInRange((int)Math.Round(corners[0, 1] / 2.0) + 1, corners[0, 1], (int)Math.Round(corners[1, 1] / 3.0) + 1, 2 * (int)Math.Round(corners[1, 1] / 3.0));
+            negativeQuantity += ((corners[0, 1] - ((int)Math.Round(corners[0, 1] / 2.0) + 1) + 1) * ((2 * (int)Math.Round(corners[1, 1] / 3.0)) - ((int)Math.Round(corners[1, 1] / 3.0) + 1) + 1));
+
+            //final
+            positive = total - negative;
+            val = positive / (FullQuatity - negativeQuantity) - negative / negativeQuantity;
+
+
             return val;
         }
 
