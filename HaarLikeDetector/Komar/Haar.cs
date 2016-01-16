@@ -407,7 +407,7 @@ namespace HaarLikeDetector.Komar
 
             this.window_max_size = window_max_size;
             this.window_size_step = window_size_step;
-            this.window_move_step = window_move_step;
+            this.window_move_step = window_move_step;//przerowbic na procenty 
             this.window_ratio = window_ratio;
             this.x_start = start_x;
             this.y_start = start_y;
@@ -437,7 +437,7 @@ namespace HaarLikeDetector.Komar
             bool ans = true;
             if (y + window_height > height)
             {
-                ans = false;
+                ans = false;//skalowanie dopisz
             }
             return ans;
         }

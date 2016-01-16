@@ -238,7 +238,7 @@ namespace HaarLikeDetector
         {
             this.toolStripStatusLabel1.Text = "Wczytywanie cech:";
             this.Update();
-            List<double[]> ArgH = new List<double[]>();
+            List<double[]> ArgH = new List<double[]>(800);
             string line;
             //Wczytaj cechy Haara z pliku
             //Task.Run(delegate {
@@ -255,6 +255,8 @@ namespace HaarLikeDetector
                             //this.toolStripProgressBar1.Value = currentLine * 100 / lineCount;
                             line += " 1"; //oznaczenie przykładu pozytywnego
                             ArgH.Add(Array.ConvertAll(line.Split(' '), Double.Parse));
+                    if (currentLine > 200)
+                        break;
                         }
                 
                     file.Close();
@@ -277,6 +279,8 @@ namespace HaarLikeDetector
                         //this.toolStripProgressBar1.Value = currentLine * 100 / lineCount;
                         line += " -1"; //oznaczenie przykładu pozytywnego
                         ArgH.Add(Array.ConvertAll(line.Split(' '), Double.Parse));
+                    if (currentLine > 600)
+                        break;
                     }
 
                     file.Close();

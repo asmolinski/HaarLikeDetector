@@ -90,8 +90,8 @@ namespace HaarLikeDetector.Adam
                 if (a1[ftId] == a2[ftId])
                     throw new Exception("Cannot divide into buckets! FeatureId: " + ftId);
             }
-            //Console.WriteLine("A1: " + string.Join(", ", a1));
-            //Console.WriteLine("A2: " + string.Join(", ", a2));
+            Console.WriteLine("A1: " + string.Join(", ", a1));
+            Console.WriteLine("A2: " + string.Join(", ", a2));
 
             // --- Uczenie ----------------------
             Console.WriteLine(
@@ -135,7 +135,11 @@ namespace HaarLikeDetector.Adam
                         else if (wN[b] == 0d)
                             f[b] = 2d;
                         else
+                        {
                             f[b] = 0.5d * Math.Log(wP[b] / wN[b]);
+                            if (f[b] > 2d) f[b] = 2d;
+                            else if (f[b] < -2d) f[b] = -2d;
+                        }
                     }
 
                     for (int exId = 0; exId < m; exId++)
@@ -164,10 +168,29 @@ namespace HaarLikeDetector.Adam
                     continue;
                 }
 
+                double epsilon = 0d;
+                for (int exId = 0; exId < m; exId++)
+                {
+                    int b = GetBucket(data, B, a1, a2, exId, ftId_best);
+                    var ans = f_best[b];
+                    if(ans * data[exId][n] <= 0)
+                        epsilon += w[exId];
+                }
+
+
+
                 // Wpisanie Id cechy na ostatnie miejsce w tablicy klasyfikatora.
                 f_best[f_best.Length - 1] = ftId_best;
                 // Dopisanie slabego klasyfikatora do klasyfikatora zbiorowego.
                 F.Add(f_best);
+
+                var epsilonF = 0d;
+                for (int exId = 0; exId < m; exId++)
+                {
+                    var ans = Classify(F, B, a1, a2, 0, data[exId]) ? 1 : -1;
+                    if (ans * data[exId][n] <= 0)
+                        epsilonF += initW;
+                }
                 // Aktualizacja wag przykladow.
                 for (int exId = 0; exId < m; exId++)
                 {
@@ -175,9 +198,9 @@ namespace HaarLikeDetector.Adam
                     w[exId] = w[exId] * Math.Exp(-data[exId][n] * f_best[b]) / Z_best;
                 }
 
-                /*Console.WriteLine(
-                    @"Iteration finished: It({0}), BestFtId({1}), BestZ({2}), f({3}).",
-                    t, ftId_best, Z_best, string.Join(", ", f_best));*/
+                Console.WriteLine(
+                    @"Iteration finished: It({0}), BestFtId({1}), BestZ({2}), Epsilon({3}), EpsilonF({4}), f({5}).",
+                    t, ftId_best, Z_best, epsilon, epsilonF, string.Join(", ", f_best));
             }
 
             // Uczenie zakonczone. Przypisanie rezultatow.
@@ -207,14 +230,20 @@ namespace HaarLikeDetector.Adam
             double[] a1, double[] a2,
             int exId, int ftId)
         {
-            if (data[exId][ftId] <= a1[ftId])
-                return 0;
-            if (data[exId][ftId] > a2[ftId])
-                return B[ftId] - 1;
+            if (a2[ftId] == a1[ftId]) return 0;
 
-            return (int)Math.Ceiling(
+            var b = (int)Math.Ceiling(
                 B[ftId] * (data[exId][ftId] - a1[ftId]) / (a2[ftId] - a1[ftId]))
                 - 1; // bo indeksy od 0
+
+            //if (data[exId][ftId] <= a1[ftId])
+            //    return 0;
+            //if (data[exId][ftId] > a2[ftId])
+            //    return B[ftId] - 1;
+
+            if (b < 0) return 0;
+            if (b > B[ftId] - 1) return B[ftId] - 1;
+            return b;
         }
 
         #endregion
@@ -264,12 +293,12 @@ namespace HaarLikeDetector.Adam
             if (featureVals == null || featureVals.Length <= 0)
                 throw new Exception("featureVals null or empty!");
 
-            if (featureVals.Length != classifier[0].Length - 1)
-            {
-                throw new Exception(string.Format(
-                    "Invalid feature count! FtValCt({0}), ClassifierFtCt({1}).",
-                    featureVals.Length, classifier[0].Length));
-            }
+            //if (featureVals.Length != classifier[0].Length - 1)
+            //{
+            //    throw new Exception(string.Format(
+            //        "Invalid feature count! FtValCt({0}), ClassifierFtCt({1}).",
+            //        featureVals.Length, classifier[0].Length));
+            //}
 
             double sum = 0d;
             foreach (var weak in classifier)
@@ -283,9 +312,9 @@ namespace HaarLikeDetector.Adam
             bool result = (sum - theta) > 0;
 
             // Zakomentowac, gdyby za mocno spamowalo po konsoli.
-            /*Console.WriteLine(
+            Console.WriteLine(
                 "Object classified: Sum({0}), Theta({1}), Result({2}).",
-                sum, theta, result);*/
+                sum, theta, result);
             return result;
         }
 
@@ -297,13 +326,19 @@ namespace HaarLikeDetector.Adam
             double a1,
             double a2)
         {
-            int b; // id koszyka do ktorego wpada wartosc cechy
-            if (ftVal <= a1)
-                b = 0;
-            else if (ftVal > a2)
-                b = B - 1;
-            else
-                b = (int)Math.Ceiling(B * (ftVal - a1) / (a2 - a1)) - 1;
+            //int b; // id koszyka do ktorego wpada wartosc cechy
+            //if (ftVal <= a1)
+            //    b = 0;
+            //else if (ftVal > a2)
+            //    b = B - 1;
+            //else
+            //    b = (int)Math.Ceiling(B * (ftVal - a1) / (a2 - a1)) - 1;
+            //return b;
+            if (a1 == a2) return 0;
+            var b = (int)Math.Ceiling(B * (ftVal - a1) / (a2 - a1)) - 1;
+            if (b < 0) return 0;
+            if (b > B - 1)
+                return B - 1;
             return b;
         }
 
